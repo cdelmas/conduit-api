@@ -1,0 +1,317 @@
+http / https
+base : /api
+produces: application/json
+consumes: application/json
+
+auth: header -> Authorization: Token <JWT token>
+
+===============================
+POST /users/login
+# Login for existing user
+{#/definitions/LoginUserRequest}
+
+200 OK
+{#/definitions/UserResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+====
+POST /users
+# Register a new user
+{#/definitions/NewUserRequest}
+
+201 Created
+{#/definitions/UserResponse}
+422 Unexpected error
+{#/definitions/GenericErrorModel"}
+
+====
+GET /users
+# Gets the currently logged-in user
+
+200 OK
+{#/definitions/UserResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+====
+PUT /users
+# Update user information for current user
+{#/definitions/UpdateUserRequest} // at least one field is required?
+
+200 OK
+{#/definitions/UserResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+===============================
+GET /profiles/{username}
+# Get a profile of a user of the system. Auth is optional
+
+200 OK
+{#/definitions/ProfileResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+====
+POST /profiles/{username}/follow
+# Follow a user by username
+
+200 OK
+{#/definitions/ProfileResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+====
+DELETE /profiles/{username}/follow
+# Unfollow a user by username"
+
+200 OK
+{#/definitions/ProfileResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+ 
+===============================
+GET /articles/feed?limit=xx&offset=xx
+# Get most recent articles from users you follow. Use query parameters to limit. Auth is required
+limit PosInt default 20
+offset PosInt default 0
+
+200 OK
+{#/definitions/MultipleArticlesResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+====
+GET /articles?tag=xx&author=xx&favorited&limit&offset
+# Get most recent articles globally. Use query parameters to filter results. Auth is optional
+tag String default "" # Filter by tag
+author String default "" # Filter by author (username)
+favorited String default "" # Filter by favorites of a user (username)
+limit PosInt default 20
+offset PosInt default 0
+
+200 OK
+{#/definitions/MultipleArticlesResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+     
+====
+POST /articles
+# Create an article. Auth is required
+{#/definitions/NewArticleRequest}
+
+201 OK
+{#/definitions/SingleArticleResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+==== 
+GET /articles/{slug}
+# Get an article. Auth not required
+
+200 OK
+{#/definitions/SingleArticleResponse}
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+====
+PUT /articles/{slug}
+# Update an article. Auth is required
+{#/definitions/UpdateArticleRequest}
+
+200 OK
+{#/definitions/SingleArticleResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+   
+====
+DELETE /articles/{slug}
+# Delete an article. Auth is required
+ 
+200 OK
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+====
+GET /articles/{slug}/comments
+# Get the comments for an article. Auth is optional
+
+200 OK
+{#/definitions/MultipleCommentsResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+====
+POST /articles/{slug}/comments
+# Create a comment for an article. Auth is required
+{#/definitions/NewCommentRequest}
+
+200 OK
+{#/definitions/SingleCommentResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+      
+====
+DELETE /articles/{slug}/comments/{id}
+# Delete a comment for an article. Auth is required
+
+200 OK
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+
+====
+POST /articles/{slug}/favorite
+# Favorite an article. Auth is required
+
+200 OK
+{#/definitions/SingleArticleResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+====
+DELETE /articles/{slug}/favorite
+# Unfavorite an article. Auth is required
+
+200 OK
+{#/definitions/SingleArticleResponse}
+401 Unauthorized
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+===============================
+GET /tags
+# Get tags. Auth not required
+
+200 OK
+{#/definitions/TagsResponse}
+422 Unexpected error
+{#/definitions/GenericErrorModel}
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+LoginUser {
+  email: string,
+  password: string
+}
+LoginUserRequest {
+  user: LoginUser
+}
+NewUser {
+  username: string,
+  email: string,
+  password: string
+}
+NewUserRequest {
+  user: NewUser
+}
+User {
+  email: string,
+  token: string,
+  username: string,
+  bio: string,
+  image: string
+}
+UserResponse {
+  user: User
+}
+UpdateUser {
+  email: string,
+  token: string,
+  username: string,
+  bio: string,
+  image: string
+}   
+UpdateUserRequest {
+  user: UpdateUser
+}
+ProfileResponse {
+  profile: Profile
+}
+Profile {
+  username: string,
+  bio: string,
+  image: string,
+  following: boolean
+}
+Article {
+  slug: string,
+  title: string,
+  description: string,
+  body: string,
+  tagList: [string],
+  createdAt: date-time,
+  updatedAt: date-time,
+  favorited: boolean,
+  favoritesCount: integer,
+  author: Profile
+}
+SingleArticleResponse {
+  article: Article
+}
+MultipleArticlesResponse {
+  articles: [Article],
+  articlesCount: integer
+}
+NewArticle {
+  title: string,
+  description: string
+  body: string
+  tagList: [string]
+}
+NewArticleRequest {
+  article: NewArticle
+}
+UpdateArticle {
+  title: string
+  description: string
+  body: string
+}
+UpdateArticleRequest {
+  article: UpdateArticle
+}
+Comment {
+  id: integer
+  createdAt: date-time
+  updatedAt: date-time
+  body: string
+  author: Profile
+}
+SingleCommentResponse {
+  comment: Comment
+}
+MultipleCommentsResponse {
+  comments: [Comment]
+}
+NewComment {
+  body: string
+}
+NewCommentRequest {
+  comment: NewComment
+}
+TagsResponse {
+  tags: [string]
+}
+GenericErrorModel {
+  errors: {
+    body: [string]
+  }
+}
+

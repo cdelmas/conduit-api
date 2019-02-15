@@ -1,0 +1,9 @@
+.env
+.metals/
+.scalafmt.conf
+design/
+docker-compose.yml
+Dockerfile
+project/project/target
+project/target/
+realworld.api.txt

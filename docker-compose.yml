@@ -1,0 +1,39 @@
+version: '3'
+services:
+  web:
+    restart: always
+    build: .
+    networks:
+      - backend
+    ports:
+      - '8080:80'
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    env_file: .env
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  postgres:
+    restart: always
+    image: postgres:latest
+    networks:
+      - backend
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    env_file: .env
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  backend:
+
+volumes:
+  db-data:
