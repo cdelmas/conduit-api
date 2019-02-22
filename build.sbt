@@ -11,7 +11,6 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       fs2,
       refined,
-      nScalaTime,
       fetch,
       monocle,
       cats,

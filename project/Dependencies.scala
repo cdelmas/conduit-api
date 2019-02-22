@@ -19,16 +19,9 @@ object Dependencies {
 
   lazy val refined = "eu.timepit" %% "refined" % "0.9.4"
 
-  lazy val nScalaTime = "com.github.nscala-time" %% "nscala-time" % "2.22.0"
-
   lazy val fetch = "com.47deg" %% "fetch" % "1.0.0-RC2"
 
   lazy val monocle = "com.github.julien-truffaut" %% "monocle-core" % "1.5.0"
-
-  /*lazy val zio = Seq(
-    "org.scalaz" %% "scalaz-zio",
-    "org.scalaz" %% "scalaz-zio-interop-cats"
-  ).map(_ % "0.6.1")*/ // TODO use it eventually
 
   lazy val doobie = Seq(
     "org.tpolecat" %% "doobie-core",
