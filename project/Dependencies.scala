@@ -13,7 +13,7 @@ object Dependencies {
     "org.http4s" %% "http4s-circe",
     "org.http4s" %% "http4s-blaze-server",
     "org.http4s" %% "http4s-blaze-client"
-  ).map(_ % "0.20.0-SNAPSHOT")
+  ).map(_ % "0.20.0")
 
   lazy val fs2 = "co.fs2" %% "fs2-core" % "1.0.3"
 
@@ -38,7 +38,10 @@ object Dependencies {
     "io.github.jmcardon" %% "tsec-http4s"
   ).map(_ % "0.0.1-M11")
 
-  lazy val cats = "org.typelevel" %% "cats-core" % "1.6.0"
+  lazy val zio = Seq(
+    "org.scalaz" %% "scalaz-zio",
+    "org.scalaz" %% "scalaz-zio-interop-cats"
+  ) map(_ % "1.0-RC4")
 
   lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5"
 }

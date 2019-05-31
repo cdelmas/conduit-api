@@ -13,9 +13,8 @@ lazy val root = (project in file("."))
       refined,
       fetch,
       monocle,
-      cats,
       scalaTest % Test
-    ) ++ circe ++ http4s ++ doobie ++ tsec,
+    ) ++ zio ++ circe ++ http4s ++ doobie ++ tsec,
     resolvers += Resolver.sonatypeRepo("snapshots"),
     assemblyJarName in assembly := "conduit-api.jar",
     mainClass in assembly := Some("conduit.Conduit")
