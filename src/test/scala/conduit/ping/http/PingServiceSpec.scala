@@ -1,4 +1,4 @@
-package conduit.adapters.http
+package conduit.ping.http
 
 import org.http4s.implicits._
 import org.scalatest.{FlatSpec, Matchers}

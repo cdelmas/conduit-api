@@ -1,10 +1,10 @@
 package conduit
 
 import cats.effect._
-import conduit.adapters.http.PingService
+import conduit.ping.http.PingService
 import org.http4s.implicits._
 import org.http4s.server.Router
-import org.http4s.server.blaze.BlazeServerBuilder
+import org.http4s.server.blaze._
 import org.http4s.server.middleware.CORS
 import scalaz.zio._
 import scalaz.zio.blocking.Blocking
@@ -19,16 +19,17 @@ object Conduit extends App {
   type AppEnvironment = Clock with Console with Blocking with System // with XXXRepository with ....
   type AppTask[A] = TaskR[AppEnvironment, A]
 
+  final case class Config(host: String)
+
   override def run(args: List[String]): ZIO[Conduit.Environment, Nothing, Int] =
     (for {
-      config <- system.env("APP_HOST") // do the necessary stuff
-      host = config getOrElse "0.0.0.0"
+      config <- loadConfig
       httpApp = Router[AppTask](
         "/api" -> PingService[AppEnvironment].service
       ).orNotFound
       server = ZIO.runtime[AppEnvironment].flatMap { implicit rs =>
         BlazeServerBuilder[AppTask]
-          .bindHttp(8080, host)
+          .bindHttp(8080, config.host)
           .withHttpApp(CORS(httpApp))
           .serve
           .compile[AppTask, AppTask, ExitCode]
@@ -43,6 +44,13 @@ object Conduit extends App {
           override val system: System.Service[Any] = base.system
         }
       }
-    }
-      yield program).foldM(err => putStrLn(s"Failure: $err") *> ZIO.succeed(1), _ => ZIO.succeed(0))
+    } yield program).foldM(
+      err => putStrLn(s"Failure: $err") *> ZIO.succeed(1),
+      _ => ZIO.succeed(0)
+    )
+
+  private def loadConfig =
+    for {
+      host <- system.env("APP_HOST") // do the necessary stuff ~> get vars and build a config object
+    } yield Config(host getOrElse "0.0.0.0")
 }
