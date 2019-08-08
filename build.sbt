@@ -14,8 +14,10 @@ lazy val root = (project in file("."))
       fetch,
       monocle,
       scalaTest % Test
-    ) ++ zio ++ circe ++ http4s ++ doobie ++ tsec,
-    resolvers += Resolver.sonatypeRepo("snapshots"),
+    ) ++ zio ++ circe ++ http4s ++ doobie ++ tsec ++ tapir,
+    resolvers += Resolver.sonatypeRepo("releases"),
     assemblyJarName in assembly := "conduit-api.jar",
-    mainClass in assembly := Some("conduit.Conduit")
+    mainClass in assembly := Some("conduit.Conduit"),
+    addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
+    addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0-M4")
   )

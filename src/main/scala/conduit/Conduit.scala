@@ -1,7 +1,8 @@
 package conduit
 
+import scalaz.zio.interop.catz._
 import cats.effect._
-import conduit.ping.http.PingService
+import conduit.ping.http.PingRoutes
 import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.blaze._
@@ -11,28 +12,33 @@ import scalaz.zio.blocking.Blocking
 import scalaz.zio.clock.Clock
 import scalaz.zio.console._
 import scalaz.zio.system._
-import scalaz.zio.interop.catz._
 import scalaz.zio.scheduler.Scheduler
+import tapir.docs.openapi._
+import tapir.openapi.circe.yaml._
+import tapir.swagger.http4s.SwaggerHttp4s
 
 object Conduit extends App {
 
   type AppEnvironment = Clock with Console with Blocking with System // with XXXRepository with ....
-  type AppTask[A] = TaskR[AppEnvironment, A]
 
   final case class Config(host: String)
+
+  private val pingRoutes = new PingRoutes[AppEnvironment]
+  private val yaml = pingRoutes.endpoints.toOpenAPI("Ping", "1.0").toYaml
 
   override def run(args: List[String]): ZIO[Conduit.Environment, Nothing, Int] =
     (for {
       config <- loadConfig
-      httpApp = Router[AppTask](
-        "/api" -> PingService[AppEnvironment].service
+      httpApp = Router(
+        "/api" -> pingRoutes.routes,
+        "/docs" -> new SwaggerHttp4s(yaml).routes[TaskR[AppEnvironment, ?]]
       ).orNotFound
       server = ZIO.runtime[AppEnvironment].flatMap { implicit rs =>
-        BlazeServerBuilder[AppTask]
+        BlazeServerBuilder[ZIO[AppEnvironment, Throwable, ?]]
           .bindHttp(8080, config.host)
           .withHttpApp(CORS(httpApp))
           .serve
-          .compile[AppTask, AppTask, ExitCode]
+          .compile[ZIO[AppEnvironment, Throwable, ?], ZIO[AppEnvironment, Throwable, ?], ExitCode]
           .drain
       }
       program <- server.provideSome[Environment] { base =>

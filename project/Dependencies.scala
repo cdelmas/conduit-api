@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
 
-  val circe = Seq(
+  lazy val circe = Seq(
     "io.circe" %% "circe-core",
     "io.circe" %% "circe-generic",
     "io.circe" %% "circe-parser"
@@ -23,6 +23,15 @@ object Dependencies {
 
   lazy val monocle = "com.github.julien-truffaut" %% "monocle-core" % "1.5.0"
 
+  lazy val tapir = Seq(
+    "com.softwaremill.tapir" %% "tapir-core",
+    "com.softwaremill.tapir" %% "tapir-http4s-server",
+    "com.softwaremill.tapir" %% "tapir-swagger-ui-http4s",
+    "com.softwaremill.tapir" %% "tapir-openapi-docs",
+    "com.softwaremill.tapir" %% "tapir-openapi-circe-yaml",
+    "com.softwaremill.tapir" %% "tapir-json-circe"
+  ).map(_ % "0.9.1")
+
   lazy val doobie = Seq(
     "org.tpolecat" %% "doobie-core",
     "org.tpolecat" %% "doobie-hikari",
@@ -41,7 +50,7 @@ object Dependencies {
   lazy val zio = Seq(
     "org.scalaz" %% "scalaz-zio",
     "org.scalaz" %% "scalaz-zio-interop-cats"
-  ) map(_ % "1.0-RC4")
+  ) map (_ % "1.0-RC4")
 
   lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5"
 }
