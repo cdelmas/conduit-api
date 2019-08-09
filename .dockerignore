@@ -6,4 +6,4 @@ docker-compose.yml
 Dockerfile
 project/project/target
 project/target/
-realworld.api.txt
+doc/
