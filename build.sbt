@@ -8,13 +8,7 @@ ThisBuild / organizationName := "cdelmas"
 lazy val root = (project in file("."))
   .settings(
     name := "conduit-api",
-    libraryDependencies ++= Seq(
-      fs2,
-      refined,
-      fetch,
-      monocle,
-      scalaTest % Test
-    ) ++ zio ++ circe ++ http4s ++ doobie ++ tsec ++ tapir,
+    libraryDependencies ++= (compileDeps ++ testDeps ++ runtimeDeps),
     resolvers += Resolver.sonatypeRepo("releases"),
     assemblyJarName in assembly := "conduit-api.jar",
     mainClass in assembly := Some("conduit.Conduit"),

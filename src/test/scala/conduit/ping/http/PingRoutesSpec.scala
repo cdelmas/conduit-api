@@ -15,7 +15,7 @@ class PingRoutesSpec extends FlatSpec with DefaultRuntime with Matchers with Htt
   private val mkEnv: ZIO[Any, Nothing, Env] = UIO.succeed(0)
 
   "ping" should "return pong" in {
-    val req = request[ZIO[Env, Throwable, ?]](Method.GET, "/ping")
+    val req = request[ZIO[Env, Throwable, ?]](Method.GET, "/api/ping")
     runWithEnv(
       check(app.run(req), Status.Ok, Some("pong"))
     )

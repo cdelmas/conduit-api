@@ -52,5 +52,22 @@ object Dependencies {
     "org.scalaz" %% "scalaz-zio-interop-cats"
   ) map (_ % "1.0-RC4")
 
+  val compileDeps = Seq(
+    fs2,
+    refined,
+    fetch,
+    monocle
+  ) ++ zio ++ circe ++ http4s ++ doobie ++ tsec ++ tapir
+
   lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5"
+
+  val testDeps = Seq(
+    scalaTest
+  ).map(_ % Test)
+
+  lazy val logback = "ch.qos.logback" % "logback-classic" % "1.0.9"
+
+  val runtimeDeps = Seq(
+    logback
+  ).map(_ % Runtime)
 }
