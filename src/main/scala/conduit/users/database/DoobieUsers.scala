@@ -1,13 +1,15 @@
 package conduit.users.database
 
+import conduit.common.error.{ConduitError, NoSuchUser, UnexpectedError}
 import conduit.users.domain.{User, Users}
+import doobie.implicits._
 import doobie.util.query.Query0
 import doobie.util.transactor.Transactor
-import scalaz.zio.{Task, ZIO}
 import scalaz.zio.interop.catz._
-import doobie.implicits._
+import scalaz.zio.{Task, ZIO}
 
 trait DoobieUsers extends Users {
+
   import DoobieUsers._
 
   protected def xa: Transactor[Task]
@@ -16,12 +18,16 @@ trait DoobieUsers extends Users {
     override def byCredentials(
         email: String,
         password: String
-    ): ZIO[Any, Nothing, Option[User]] =
+    ): ZIO[Any, ConduitError, User] =
       SQL
         .byCredentials(email, password)
         .option
         .transact(xa)
-        .orDie
+        .mapError(UnexpectedError)
+        .flatMap {
+          case Some(u) => ZIO.succeed(u)
+          case None    => ZIO.fail(NoSuchUser(email))
+        }
   }
 }
 

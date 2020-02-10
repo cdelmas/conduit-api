@@ -8,17 +8,18 @@ import tapir._
 
 import tapir.server.http4s._
 
-class PingRoutes[R /* <: XXX*/ ] extends Http4sDsl[TaskR[R, ?]]() {
+class PingRoutes[R] extends Http4sDsl[TaskR[R, *]]() {
 
-  private val pingEndpoint = endpoint.get.out(stringBody)
+  private val pingEndpoint = endpoint.get.in("ping").out(stringBody)
 
-  def routes: HttpRoutes[TaskR[R, ?]] = {
+  def routes: HttpRoutes[TaskR[R, *]] = {
     pingEndpoint.toRoutes { _ =>
       pong
     }
   }
 
-  private def pong: ZIO[R, Throwable, Either[Unit, String]] = ZIO.succeed(Right("pong"))
+  private def pong: ZIO[R, Throwable, Either[Unit, String]] =
+    ZIO.succeed(Right("pong"))
 
   val endpoints = List(pingEndpoint)
 }
